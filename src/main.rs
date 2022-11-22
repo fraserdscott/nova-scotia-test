@@ -14,12 +14,13 @@ use serde::{Deserialize, Serialize};
 use serde_json::json;
 
 fn main() {
-    let iteration_count = 5;
+    let iteration_count = 64;
     let root = current_dir().unwrap();
 
     let circuit_file = root.join("src/toy/toy.r1cs");
     let r1cs = load_r1cs(&circuit_file);
-    let witness_generator_file = root.join("src/toy/toy_cpp/toy");
+    let witness_generator_file_js = root.join("src/toy/toy_js/generate_witness.js");
+    let witness_generator_file_wasm = root.join("src/toy/toy_js/toy.wasm");
 
     let mut private_inputs = Vec::new();
     for i in 0..iteration_count {
@@ -53,7 +54,8 @@ fn main() {
     println!("Creating a RecursiveSNARK...");
     let start = Instant::now();
     let recursive_snark = create_recursive_circuit(
-        witness_generator_file,
+        witness_generator_file_js,
+        witness_generator_file_wasm,
         r1cs,
         private_inputs,
         start_public_input.clone(),
